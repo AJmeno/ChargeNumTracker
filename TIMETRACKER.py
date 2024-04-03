@@ -8,7 +8,7 @@ st.set_page_config(page_title="Charge Number Tracker", layout="wide")
 
 # Initialize session state
 if 'charge_numbers' not in st.session_state:
-    st.session_state['charge_numbers'] = pd.DataFrame(columns=['Charge Number', 'Date', 'Time Spent (hours)'])
+    st.session_state['charge_numbers'] = pd.DataFrame(columns=['Issue Number', 'Charge Number', 'Date', 'Time Spent (hours)'])
 
 if 'active_charge_number' not in st.session_state:
     st.session_state['active_charge_number'] = None
@@ -18,18 +18,20 @@ if 'timer_start' not in st.session_state:
 
 # Function to add a new charge number entry
 def add_charge_number():
+    issue_number = st.text_input("Issue Number")
     charge_number = st.text_input("Charge Number")
     date = st.date_input("Date")
     time_spent = st.number_input("Time Spent (hours)", min_value=0.0, step=0.1)
 
     if st.button("Add"):
-        new_entry = pd.DataFrame({'Charge Number': [charge_number], 'Date': [date], 'Time Spent (hours)': [time_spent]})
+        new_entry = pd.DataFrame({'Issue Number': [issue_number], 'Charge Number': [charge_number], 'Date': [date], 'Time Spent (hours)': [time_spent]})
         st.session_state['charge_numbers'] = pd.concat([st.session_state['charge_numbers'], new_entry], ignore_index=True)
         st.success("Charge number entry added!")
 
 # Function to start/stop the timer
 def start_stop_timer():
     if st.session_state['active_charge_number'] is None:
+        issue_number = st.text_input("Enter Issue Number")
         charge_number = st.text_input("Enter Charge Number to start timer")
         if st.button("Start Timer"):
             st.session_state['active_charge_number'] = charge_number
@@ -38,7 +40,7 @@ def start_stop_timer():
     else:
         if st.button("Stop Timer"):
             time_spent = time.time() - st.session_state['timer_start']
-            new_entry = pd.DataFrame({'Charge Number': [st.session_state['active_charge_number']], 'Date': [datetime.date.today()], 'Time Spent (hours)': [time_spent / 3600]})
+            new_entry = pd.DataFrame({'Issue Number': [issue_number], 'Charge Number': [st.session_state['active_charge_number']], 'Date': [datetime.date.today()], 'Time Spent (hours)': [time_spent / 3600]})
             st.session_state['charge_numbers'] = pd.concat([st.session_state['charge_numbers'], new_entry], ignore_index=True)
             st.session_state['active_charge_number'] = None
             st.session_state['timer_start'] = None
