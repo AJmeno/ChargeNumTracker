@@ -79,7 +79,3 @@ else:
 # Add a new charge number entry
 st.subheader("Add a New Charge Number Entry")
 add_charge_number()
-
-# Start/stop the timer
-st.subheader("Timer")
-start_stop_timer(issue_number)
