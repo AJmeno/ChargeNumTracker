@@ -53,8 +53,14 @@ if not st.session_state['charge_numbers'].empty:
     # Calculate the percentage of time spent on each charge number
     st.session_state['charge_numbers']['Percentage of 8 Hours'] = (st.session_state['charge_numbers']['Time Spent (hours)'] / 8) * 100
     
+    # Move the 'Status' column to the end
+    cols = st.session_state['charge_numbers'].columns.tolist()
+    cols = cols[:4] + cols[-1:] + cols[4:-1]
+    st.session_state['charge_numbers'] = st.session_state['charge_numbers'][cols]
+    
     # Display the data frame with the percentage column and enable editing
-    st.session_state['charge_numbers'] = st.experimental_data_editor(st.session_state['charge_numbers'])
+    if st.button("Edit Table"):
+        st.session_state['charge_numbers'] = st.experimental_data_editor(st.session_state['charge_numbers'])
     
     # Add a new column to display the status in color
     st.session_state['charge_numbers']['Status'] = st.session_state['charge_numbers']['Status'].apply(lambda x: f'<span style="color:{"green" if x == "Approved" else "red"}">{x}</span>' if x else '')
