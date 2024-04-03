@@ -52,8 +52,8 @@ if not st.session_state['charge_numbers'].empty:
     # Calculate the percentage of time spent on each charge number
     st.session_state['charge_numbers']['Percentage of 8 Hours'] = (st.session_state['charge_numbers']['Time Spent (hours)'] / 8) * 100
     
-    # Display the data frame with the percentage column
-    st.table(st.session_state['charge_numbers'])
+    # Display the data frame with the percentage column and enable editing
+    st.session_state['charge_numbers'] = st.experimental_data_editor(st.session_state['charge_numbers'])
 else:
     st.write("No charge number entries yet.")
 
