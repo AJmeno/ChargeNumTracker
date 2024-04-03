@@ -8,7 +8,7 @@ st.set_page_config(page_title="Charge Number Tracker", layout="wide")
 
 # Initialize session state
 if 'charge_numbers' not in st.session_state:
-    st.session_state['charge_numbers'] = pd.DataFrame(columns=['Issue Number', 'Charge Number', 'Date', 'Time Spent (hours)'])
+    st.session_state['charge_numbers'] = pd.DataFrame(columns=['Issue Number', 'Charge Number', 'Date', 'Time Spent (hours)', 'Status'])
 
 if 'active_charge_number' not in st.session_state:
     st.session_state['active_charge_number'] = None
@@ -22,9 +22,10 @@ def add_charge_number():
     charge_number = st.text_input("Charge Number")
     date = st.date_input("Date")
     time_spent = st.number_input("Time Spent (hours)", min_value=0.0, step=0.1)
+    status = st.selectbox("Status", ["", "Approved", "Rejected"])
 
     if st.button("Add"):
-        new_entry = pd.DataFrame({'Issue Number': [issue_number], 'Charge Number': [charge_number], 'Date': [date], 'Time Spent (hours)': [time_spent]})
+        new_entry = pd.DataFrame({'Issue Number': [issue_number], 'Charge Number': [charge_number], 'Date': [date], 'Time Spent (hours)': [time_spent], 'Status': [status]})
         st.session_state['charge_numbers'] = pd.concat([st.session_state['charge_numbers'], new_entry], ignore_index=True)
         st.success("Charge number entry added!")
 
@@ -40,7 +41,7 @@ def start_stop_timer():
     else:
         if st.button("Stop Timer"):
             time_spent = time.time() - st.session_state['timer_start']
-            new_entry = pd.DataFrame({'Issue Number': [issue_number], 'Charge Number': [st.session_state['active_charge_number']], 'Date': [datetime.date.today()], 'Time Spent (hours)': [time_spent / 3600]})
+            new_entry = pd.DataFrame({'Issue Number': [issue_number], 'Charge Number': [st.session_state['active_charge_number']], 'Date': [datetime.date.today()], 'Time Spent (hours)': [time_spent / 3600], 'Status': ["Approved"]})
             st.session_state['charge_numbers'] = pd.concat([st.session_state['charge_numbers'], new_entry], ignore_index=True)
             st.session_state['active_charge_number'] = None
             st.session_state['timer_start'] = None
@@ -54,6 +55,10 @@ if not st.session_state['charge_numbers'].empty:
     
     # Display the data frame with the percentage column and enable editing
     st.session_state['charge_numbers'] = st.experimental_data_editor(st.session_state['charge_numbers'])
+    
+    # Add a new column to display the status in color
+    st.session_state['charge_numbers']['Status'] = st.session_state['charge_numbers']['Status'].apply(lambda x: f'<span style="color:{"green" if x == "Approved" else "red"}">{x}</span>' if x else '')
+    st.write(st.session_state['charge_numbers'].to_html(escape=False), unsafe_allow_html=True)
 else:
     st.write("No charge number entries yet.")
 
