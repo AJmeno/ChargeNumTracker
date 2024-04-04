@@ -28,11 +28,11 @@ def add_charge_number():
         new_entry = pd.DataFrame({'Issue Number': [issue_number], 'Charge Number': [charge_number], 'Date': [date], 'Time Spent (hours)': [time_spent], 'Status': [status]})
         st.session_state['charge_numbers'] = pd.concat([st.session_state['charge_numbers'], new_entry], ignore_index=True)
         st.success("Charge number entry added!")
-        start_stop_timer(issue_number)
 
 # Function to start/stop the timer
-def start_stop_timer(issue_number):
+def start_stop_timer():
     if st.session_state['active_charge_number'] is None:
+        issue_number = st.text_input("Enter Issue Number")
         charge_number = st.text_input("Enter Charge Number to start timer")
         if st.button("Start Timer"):
             st.session_state['active_charge_number'] = charge_number
@@ -79,3 +79,7 @@ else:
 # Add a new charge number entry
 st.subheader("Add a New Charge Number Entry")
 add_charge_number()
+
+# Start/stop the timer
+st.subheader("Timer")
+start_stop_timer()
